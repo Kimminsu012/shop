@@ -4,6 +4,7 @@ import com.weapon.shop.constant.ItemSellStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter @Setter
 @ToString
-public class Item {
+public class Item extends BaseEntity{
 
     @Id
     @Column(name = "item_id")
@@ -25,20 +26,15 @@ public class Item {
     private int price; // 상품가격
 
     @Column(nullable = false)
-    private int stockNumber; // 재고수량
+    private Integer stockNumber; // 재고수량
 
-    @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(nullable = false)
     private String itemDetail; // 상품 상세 설명
 
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; // 상품 판매 가능 상태
 
-    @Column
-    private LocalDateTime regTime; // 상품 최초 등록 날짜시간
-
-    @Column
-    private LocalDateTime updateTime; // 상품 수정 날짜시간
 }
 
 /*
