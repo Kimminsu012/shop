@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,14 @@ public class ItemController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/item/{itemId}")
+    public String itemDtl(@PathVariable Long itemId, Model model){
+
+        model.addAttribute("item", itemService.getItemDtl(itemId));
+
+        return "item/itemDtl";
     }
 
 

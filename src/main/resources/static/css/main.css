@@ -1,0 +1,53 @@
+#g-container{
+    width: 100%;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+        "a a a b b b"
+        "c c d d e e"
+    ;
+    gap: 5px;
+    margin: 0 auto;
+}
+.item1{grid-area: a;}
+.item2{grid-area: b;}
+.item3{grid-area: c;}
+.item4{grid-area: d;}
+.item5{grid-area: e;}
+
+.g-item{
+    overflow: hidden;
+}
+.g-item img{width: 100%;}
+.g-card-box a{
+    display: block;
+    text-decoration: none;
+    color: black;
+}
+.g-card-box a:hover{
+    text-decoration: underline cadetblue;
+}
+.g-card-body{
+    padding:10px 20px;
+}
+.g-card-text{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.g-card-price{ color: darkred;}
+
+@media screen and (max-width:550px){
+    #g-container{
+        grid-template-columns: repeat(2,1fr);
+        grid-template-areas:
+            "a a"
+            "b c"
+            "d e"
+        ;
+    }
+}
