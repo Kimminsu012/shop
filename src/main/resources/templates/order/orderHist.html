@@ -1,0 +1,125 @@
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultrag.net.nz/thymeleaf/layout" layout:decorate="~{fragment/basic}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<th:block layout:fragment="css">
+
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        function cancelOrder(orderId){
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/order/"+orderId+"/cancel";
+            var paramData = { orderId : orderId };
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url : url,
+                type : "POST",
+                contentType : "application/json",
+                data : param,
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader(header, token); // 전송전에 헤더에 csrf 설정
+                },
+                dataType : "json",
+                cache : false,
+                success : function( result , status){
+                    alert("주문 취소");
+                location.href="/orders/"+[[${page}]];
+                },
+                error : function(jqXHR , status , error){
+                    if(jqXHR.status == '200'){
+                        alert("로그인 후 이용");
+                        location.href="/members/login";
+                    }else{
+                        alert(jqXHR.requestText);
+                    }
+                }
+            });
+        }
+
+
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+
+    <h2 class="my-4">구매이력</h2>
+
+    <div th:each="order, stat : ${orders.getContent()}">
+        <th:block th:if="${ stat.index == 0 or (stat.index != 0 ? ( not ( #strings.substring(order.orderDate,0,10) eq #strings.substring(orders.getContent()[stat.index-1].orderDate,0,10) ) ) : '') }">
+            <h4 th:text="${#strings.substring(order.orderDate,0,10)}" class="m-3"></h4>
+        </th:block>
+
+        <div class="card d-flex w-100">
+            <div th:each="orderItem : ${order.orderItemDtoList}" class="d-flex">
+                <div class="w-25">
+                    <img th:src="${ orderItem.imgUrl }" class="rounded" style="width:150px; height:150px;">
+                </div>
+                <div class="d-flex align-items-center w-75">
+                    <span th:text="${orderItem.itemNm}" class="fs-3 font-wright-bold w-50"></span>
+                    <div class="font-weight-light w-25">
+                        <span th:text="${#numbers.formatCurrency(orderItem.orderPrice)} + ' 원'" class="d-block w-50"></span>
+                        <span th:text="${orderItem.count}+'개'" class="d-block"></span>
+                    </div>
+
+                    <div class="w-25 text-end p-3">
+                        <h5 th:text="${order.orderDate} + '주문'" class="mb-3 fs-6"></h5>
+                        <th:block th:if="${order.orderStatus == T(com.weapon.shop.constant.OrderStatus).ORDER}">
+                            <button type="button" class="btn btn-outline-secondary" th:vaule="${order.orderId}" th:onclick="cancelOrder(this.value)">주문취소</button>
+                        </th:block>
+                        <th:block th:unless="${order.orderStatus == T(com.weapon.shop.constant.OrderStatus).ORDER}">
+                            <h4>(취소완료)</h4>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div th:with="start=${(orders.number/maxPage)*maxPage + 1}, end=(${(orders.totalPages == 0) ? 1 :
+    ( start + (maxPage-1) < orders.totalPages ? start + (maxPage-1) : orders.totalPages ) })">
+
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${orders.number eq 0} ? 'disabled' : '' ">
+                <a th:href="@{ '/orders/' + ${orders.number-1} }" class="page-link" aria-label="Prev">
+                    <span aria-hidden="true">Prev</span>
+                </a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(start,end)}" th:classappend="${orders.number eq page-1} ? 'active' : '' " class="page-item">
+                <a th:href="@{ '/orders/' + ${page-1} }" th:text="${page}" class="page-link"></a>
+            </li>
+            <li class="page-item" th:classappend="${orders.number+1 ge orders.totalPages} ? 'disabled' : '' ">
+                <a th:href="@{ '/orders/' + ${orders.number+1} }" aria-label="Next" class="page-link">
+                    <span aria-hidden="true">Next</span>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+</html>

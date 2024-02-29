@@ -3,9 +3,11 @@ package com.weapon.shop.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.weapon.shop.dto.ItemFormDto;
 import com.weapon.shop.dto.ItemSearchDto;
 import com.weapon.shop.dto.MainItemDto;
 import com.weapon.shop.dto.QMainItemDto;
+import com.weapon.shop.entity.Item;
 import com.weapon.shop.entity.QItem;
 import com.weapon.shop.entity.QItemImg;
 import org.springframework.data.domain.Page;
@@ -56,6 +58,25 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom{
 
         return new PageImpl<>(cont,pageable,total); // content , 페이징 , total
 
+    }
+
+    @Override
+    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable) {
+        QItem item = QItem.item;
+
+        List<Item> cont = jpaQueryFactory
+                .selectFrom(item)
+                .orderBy(item.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = jpaQueryFactory
+                .select(Wildcard.count)
+                .from(item)
+                .fetchOne();
+
+        return new PageImpl<>(cont,pageable,total);
     }
 
     private BooleanExpression itemNmLike(String searchQuery){

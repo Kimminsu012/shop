@@ -28,6 +28,11 @@ public class ItemService {
     private final ItemImgRepository itemImgRepository;
     private final ItemImgService itemImgService;
 
+    @Transactional(readOnly = true)
+    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
+        return itemRepository.getAdminItemPage(itemSearchDto,pageable);
+    }
+
     // 아이템 상세보기
     public ItemFormDto getItemDtl(Long itemId){
         List<ItemImg> itemImgs = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
